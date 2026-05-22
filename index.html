@@ -389,7 +389,7 @@
 
     .modal-header {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
       gap: 18px;
       margin-bottom: 18px;
@@ -405,6 +405,9 @@
       width: 40px;
       height: 40px;
       flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      padding: 0;
       border: 1px solid rgba(255, 240, 218, 0.20);
       border-radius: 999px;
       color: var(--text);
@@ -629,15 +632,13 @@
 
       <div class="date-line" aria-label="Data wydarzenia">
         <span id="dateText">czekamy na dane</span>
-        <span>•</span>
-        <span>czas Warszawy</span>
       </div>
 
       <div class="next-box">
         <p class="next-title">Najbliższa pyszność</p>
         <div id="nextEventBox" aria-live="polite"></div>
         <div class="more-row">
-          <button class="text-link" type="button" id="openEventsButton" hidden>Zobacz więcej</button>
+          <button class="text-link" type="button" id="openEventsButton">Zobacz wszystkie</button>
         </div>
       </div>
 
@@ -655,7 +656,7 @@
       <div class="modal-header">
         <div>
           <h2 id="eventsModalTitle">Wszystkie pyszności</h2>
-          <p>Najbliższe zaplanowane terminy.</p>
+          <p>Aktualna i kolejne zaplanowane pyszności.</p>
         </div>
         <button class="close-button" type="button" aria-label="Zamknij" data-close-modal>×</button>
       </div>
@@ -669,7 +670,7 @@
       <div class="modal-header">
         <div>
           <h2 id="formModalTitle">Zgłoś pyszność</h2>
-          <p>Podaj termin i krótki opis. Po sprawdzeniu zgłoszenie pojawi się na stronie.</p>
+          <p>Masz coś pysznego? Dodaj termin, a po krótkim sprawdzeniu pojawi się na stronie.</p>
         </div>
         <button class="close-button" type="button" aria-label="Zamknij" data-close-modal>×</button>
       </div>
@@ -818,17 +819,17 @@
         elements.dateText.textContent = "brak daty";
         elements.status.textContent = "";
         elements.nextEventBox.innerHTML = `<div class="empty-state">Nie ma jeszcze zaplanowanych pyszności.</div>`;
-        elements.openEventsButton.hidden = true;
+        elements.openEventsButton.hidden = false;
         setCountdownToZero();
         return;
       }
 
       const eventDate = new Date(nearestEvent.event_at);
-      elements.title.textContent = `Już wkrótce: ${nearestEvent.treat_name}!`;
+      elements.title.textContent = "Już wkrótce";
       elements.subtitle.textContent = "Zostało tylko trochę czasu do najpyszniejszego momentu.";
       elements.dateText.textContent = warsawDateFormatter.format(eventDate);
       elements.nextEventBox.innerHTML = createEventHtml(nearestEvent);
-      elements.openEventsButton.hidden = approvedEvents.length <= 1;
+      elements.openEventsButton.hidden = false;
     }
 
     function updateCountdown() {
@@ -911,7 +912,7 @@
       } catch (error) {
         console.error(error);
         elements.nextEventBox.innerHTML = `<div class="empty-state">Nie udało się pobrać listy. Spróbuj odświeżyć stronę za chwilę.</div>`;
-        elements.openEventsButton.hidden = true;
+        elements.openEventsButton.hidden = false;
         elements.status.textContent = "Błąd pobierania danych.";
       }
     }
