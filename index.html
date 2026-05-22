@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#1a100b" />
-  <title>Już wkrótce: coś pysznego!</title>
+  <title>Już wkrótce</title>
 
   <style>
     :root {
@@ -133,7 +133,7 @@
     h1 {
       max-width: 13ch;
       margin: 0 auto 14px;
-      font-size: clamp(2.4rem, 7.4vw, 5.1rem);
+      font-size: clamp(2.8rem, 8.2vw, 6.0rem);
       font-weight: 740;
       line-height: 0.98;
       letter-spacing: -0.055em;
@@ -314,37 +314,25 @@
       margin-top: clamp(20px, 4vw, 30px);
     }
 
-    .primary-button,
-    .secondary-button {
-      border: 1px solid rgba(255, 216, 154, 0.42);
-      border-radius: 999px;
-      font-weight: 760;
-      cursor: pointer;
-      transition: transform 160ms ease, filter 160ms ease, opacity 160ms ease, background 160ms ease;
-    }
-
     .primary-button {
       min-width: min(260px, 100%);
       padding: 13px 20px;
+      border: 1px solid rgba(255, 216, 154, 0.42);
+      border-radius: 999px;
       color: #1a100b;
       background: linear-gradient(180deg, #ffe8bd, #ffd089);
+      font-weight: 760;
+      cursor: pointer;
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.20);
+      transition: transform 160ms ease, filter 160ms ease, opacity 160ms ease;
     }
 
-    .secondary-button {
-      padding: 10px 14px;
-      color: var(--accent-strong);
-      background: rgba(0, 0, 0, 0.18);
-    }
-
-    .primary-button:hover,
-    .secondary-button:hover {
+    .primary-button:hover {
       transform: translateY(-1px);
       filter: brightness(1.03);
     }
 
-    .primary-button:disabled,
-    .secondary-button:disabled {
+    .primary-button:disabled {
       cursor: wait;
       opacity: 0.72;
       transform: none;
@@ -389,10 +377,14 @@
 
     .modal-header {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 18px;
       margin-bottom: 18px;
+    }
+
+    .modal-header > div {
+      flex: 1 1 auto;
     }
 
     .modal-header p {
@@ -405,9 +397,11 @@
       width: 40px;
       height: 40px;
       flex: 0 0 auto;
+      align-self: flex-start;
       display: grid;
       place-items: center;
-      padding: 0;
+      margin: 0;
+      padding: 0 0 2px;
       border: 1px solid rgba(255, 240, 218, 0.20);
       border-radius: 999px;
       color: var(--text);
@@ -503,44 +497,81 @@
     .sparkle {
       position: absolute;
       left: var(--left);
-      top: 105vh;
+      top: 108vh;
       width: var(--size);
       height: var(--size);
-      border-radius: 999px;
+      border-radius: 50%;
+      pointer-events: auto;
+      cursor: pointer;
       opacity: 0;
+      border: 1px solid rgba(111, 60, 29, 0.35);
       background:
-        radial-gradient(circle, rgba(255, 255, 255, 0.98) 0 22%, rgba(255, 230, 174, 0.86) 24% 46%, transparent 70%);
+        radial-gradient(circle at 24% 28%, rgba(255,255,255,0.18) 0 10%, transparent 11%),
+        radial-gradient(circle at 67% 22%, #6a3722 0 8%, transparent 9%),
+        radial-gradient(circle at 73% 58%, #6a3722 0 9%, transparent 10%),
+        radial-gradient(circle at 34% 66%, #6a3722 0 8%, transparent 9%),
+        radial-gradient(circle at 47% 42%, #6a3722 0 7%, transparent 8%),
+        linear-gradient(180deg, #ddb16f, #bb7a43);
       box-shadow:
-        0 0 16px rgba(255, 214, 141, 0.8),
-        0 0 34px rgba(255, 214, 141, 0.32);
-      animation: rise var(--duration) linear var(--delay) infinite;
+        0 8px 18px rgba(0, 0, 0, 0.22),
+        inset 0 1px 0 rgba(255,255,255,0.15);
+      animation: floatCookie var(--duration) linear var(--delay) infinite;
       will-change: transform, opacity;
     }
 
     .sparkle::after {
       content: "";
       position: absolute;
-      inset: -170%;
-      background:
-        linear-gradient(90deg, transparent 43%, rgba(255, 255, 255, 0.9) 48% 52%, transparent 57%),
-        linear-gradient(0deg, transparent 43%, rgba(255, 255, 255, 0.9) 48% 52%, transparent 57%);
-      transform: rotate(45deg);
-      opacity: 0.72;
+      inset: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 28%, rgba(255,255,255,0.14), transparent 32%);
     }
 
-    @keyframes rise {
+    .sparkle.crumbled {
+      animation: none;
+      opacity: 0;
+      transform: scale(0.2) rotate(45deg);
+      transition: transform 220ms ease, opacity 220ms ease;
+    }
+
+    .crumb {
+      position: fixed;
+      left: var(--x);
+      top: var(--y);
+      width: var(--size);
+      height: var(--size);
+      border-radius: 50%;
+      background: linear-gradient(180deg, #e5b97a, #b87440);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+      pointer-events: none;
+      z-index: 4;
+      animation: crumbBurst 850ms ease-out forwards;
+    }
+
+    @keyframes floatCookie {
       0% {
-        transform: translate3d(0, 0, 0) rotate(0deg) scale(0.55);
+        transform: translate3d(0, 0, 0) rotate(0deg) scale(0.75);
         opacity: 0;
       }
       12% {
-        opacity: 0.85;
+        opacity: 0.95;
       }
-      78% {
-        opacity: 0.74;
+      82% {
+        opacity: 0.92;
       }
       100% {
-        transform: translate3d(var(--drift), -122vh, 0) rotate(230deg) scale(1.04);
+        transform: translate3d(var(--drift), -124vh, 0) rotate(260deg) scale(1.02);
+        opacity: 0;
+      }
+    }
+
+    @keyframes crumbBurst {
+      0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.2);
         opacity: 0;
       }
     }
@@ -591,7 +622,6 @@
       }
 
       .primary-button,
-      .secondary-button,
       .text-link {
         transition: none;
       }
@@ -608,7 +638,7 @@
   <main class="page">
     <section class="card" aria-labelledby="title">
       <p class="eyebrow">Odliczanie</p>
-      <h1 id="title">Już wkrótce: coś pysznego!</h1>
+      <h1 id="title">Już wkrótce</h1>
       <p class="subtitle" id="subtitle">Ładujemy najbliższą zgłoszoną słodkość...</p>
 
       <div class="countdown" role="timer" aria-live="polite" aria-label="Odliczanie do wydarzenia">
@@ -813,8 +843,9 @@
     }
 
     function updateMainCard() {
+      elements.title.textContent = "Już wkrótce";
+
       if (!nearestEvent) {
-        elements.title.textContent = "Na razie cisza w piekarniku";
         elements.subtitle.textContent = "Brak zaplanowanych pyszności. Możesz dodać pierwszy termin.";
         elements.dateText.textContent = "brak daty";
         elements.status.textContent = "";
@@ -825,7 +856,6 @@
       }
 
       const eventDate = new Date(nearestEvent.event_at);
-      elements.title.textContent = "Już wkrótce";
       elements.subtitle.textContent = "Zostało tylko trochę czasu do najpyszniejszego momentu.";
       elements.dateText.textContent = warsawDateFormatter.format(eventDate);
       elements.nextEventBox.innerHTML = createEventHtml(nearestEvent);
@@ -1011,25 +1041,56 @@
       }
     }
 
+    function spawnCookie(layer) {
+      const cookie = document.createElement("span");
+      const size = 18 + Math.random() * 18;
+      const duration = 11 + Math.random() * 9;
+      const delay = Math.random() * -duration;
+      const left = Math.random() * 100;
+      const drift = (Math.random() * 120 - 60).toFixed(1);
+
+      cookie.className = "sparkle";
+      cookie.style.setProperty("--size", `${size}px`);
+      cookie.style.setProperty("--duration", `${duration}s`);
+      cookie.style.setProperty("--delay", `${delay}s`);
+      cookie.style.setProperty("--left", `${left}vw`);
+      cookie.style.setProperty("--drift", `${drift}px`);
+
+      cookie.addEventListener("click", () => crumbleCookie(cookie, layer), { once: true });
+      layer.appendChild(cookie);
+    }
+
+    function crumbleCookie(cookie, layer) {
+      const rect = cookie.getBoundingClientRect();
+      const crumbsCount = 10 + Math.floor(Math.random() * 6);
+
+      for (let index = 0; index < crumbsCount; index += 1) {
+        const crumb = document.createElement("span");
+        crumb.className = "crumb";
+        crumb.style.setProperty("--x", `${rect.left + rect.width / 2}px`);
+        crumb.style.setProperty("--y", `${rect.top + rect.height / 2}px`);
+        crumb.style.setProperty("--dx", `${(Math.random() * 90 - 45).toFixed(1)}px`);
+        crumb.style.setProperty("--dy", `${(-20 - Math.random() * 75).toFixed(1)}px`);
+        crumb.style.setProperty("--size", `${2 + Math.random() * 4}px`);
+        layer.appendChild(crumb);
+
+        setTimeout(() => crumb.remove(), 900);
+      }
+
+      cookie.classList.add("crumbled");
+      setTimeout(() => cookie.remove(), 240);
+
+      setTimeout(() => {
+        spawnCookie(layer);
+      }, 700 + Math.random() * 400);
+    }
+
     function createSparkles() {
       const layer = document.querySelector(".sparkles");
-      const sparkleCount = Math.min(48, Math.max(22, Math.floor(window.innerWidth / 16)));
+      const cookiesCount = Math.min(22, Math.max(10, Math.floor(window.innerWidth / 85)));
 
-      for (let index = 0; index < sparkleCount; index += 1) {
-        const sparkle = document.createElement("span");
-        const size = 1.4 + Math.random() * 1.8;
-        const duration = 8 + Math.random() * 10;
-        const delay = Math.random() * -duration;
-        const left = Math.random() * 100;
-        const drift = (Math.random() * 120 - 60).toFixed(1);
-
-        sparkle.className = "sparkle";
-        sparkle.style.setProperty("--size", `${size}px`);
-        sparkle.style.setProperty("--duration", `${duration}s`);
-        sparkle.style.setProperty("--delay", `${delay}s`);
-        sparkle.style.setProperty("--left", `${left}vw`);
-        sparkle.style.setProperty("--drift", `${drift}px`);
-        layer.appendChild(sparkle);
+      for (let index = 0; index < cookiesCount; index += 1) {
+        spawnCookie(layer);
       }
     }
 
