@@ -94,6 +94,29 @@
       padding: max(22px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(22px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
     }
 
+    .cookie-counter {
+      position: fixed;
+      right: max(16px, env(safe-area-inset-right));
+      top: max(14px, env(safe-area-inset-top));
+      z-index: 6;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 12px;
+      border: 1px solid rgba(255, 240, 218, 0.22);
+      border-radius: 999px;
+      color: rgba(255, 250, 244, 0.90);
+      background: rgba(22, 11, 7, 0.42);
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.26);
+      backdrop-filter: blur(14px) saturate(1.12);
+      -webkit-backdrop-filter: blur(14px) saturate(1.12);
+      font-size: 0.94rem;
+      font-weight: 760;
+      font-variant-numeric: tabular-nums;
+      user-select: none;
+      pointer-events: none;
+    }
+
     .card {
       width: min(820px, 100%);
       padding: clamp(26px, 5vw, 56px);
@@ -306,6 +329,28 @@
       color: var(--muted);
       line-height: 1.55;
       background: rgba(0, 0, 0, 0.12);
+    }
+
+    .empty-state-large {
+      padding: 22px 18px;
+      text-align: center;
+    }
+
+    .empty-title {
+      margin: 0;
+      color: var(--accent-strong);
+      font-size: clamp(1.35rem, 3vw, 2rem);
+      font-weight: 760;
+      letter-spacing: -0.035em;
+      line-height: 1.15;
+    }
+
+    .empty-subtitle {
+      max-width: 34ch;
+      margin: 8px auto 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+      line-height: 1.55;
     }
 
     .main-actions {
@@ -634,6 +679,7 @@
   <div class="vignette" aria-hidden="true"></div>
   <div class="noise" aria-hidden="true"></div>
   <div class="sparkles" aria-hidden="true"></div>
+  <div class="cookie-counter" aria-label="Licznik pokruszonych ciasteczek">🍪 <span id="cookieCrumbCount">0</span></div>
 
   <main class="page">
     <section class="card" aria-labelledby="title">
@@ -667,7 +713,7 @@
       <div class="next-box">
         <div id="nextEventBox" aria-live="polite"></div>
         <div class="more-row">
-          <button class="text-link" type="button" id="openEventsButton">Zobacz wszystkie</button>
+          <button class="text-link" type="button" id="openEventsButton">Wszystkie najbliższe</button>
         </div>
       </div>
 
@@ -766,7 +812,8 @@
       form: document.getElementById("cakeForm"),
       submitButton: document.getElementById("submitButton"),
       formMessage: document.getElementById("formMessage"),
-      eventAt: document.getElementById("eventAt")
+      eventAt: document.getElementById("eventAt"),
+      cookieCrumbCount: document.getElementById("cookieCrumbCount")
     };
 
     const apiHeaders = {
@@ -848,7 +895,12 @@
         elements.subtitle.textContent = "Brak zaplanowanych pyszności. Możesz dodać pierwszy termin.";
         elements.dateText.textContent = "brak daty";
         elements.status.textContent = "";
-        elements.nextEventBox.innerHTML = `<div class="empty-state">Nie ma jeszcze zaplanowanych pyszności.</div>`;
+        elements.nextEventBox.innerHTML = `
+          <div class="empty-state empty-state-large">
+            <p class="empty-title">Na razie nic nie ma</p>
+            <p class="empty-subtitle">Ale zawsze można coś upiec i dać znać wcześniej!</p>
+          </div>
+        `;
         elements.openEventsButton.hidden = false;
         setCountdownToZero();
         return;
@@ -904,7 +956,12 @@
 
     function renderEventsModal() {
       if (!approvedEvents.length) {
-        elements.eventsList.innerHTML = `<div class="empty-state">Nie ma jeszcze zaplanowanych pyszności.</div>`;
+        elements.eventsList.innerHTML = `
+          <div class="empty-state empty-state-large">
+            <p class="empty-title">Na razie nic nie ma</p>
+            <p class="empty-subtitle">Ale zawsze można coś upiec i dać znać wcześniej!</p>
+          </div>
+        `;
         return;
       }
 
@@ -1040,11 +1097,11 @@
       }
     }
 
-    function spawnCookie(layer) {
+    function spawnCookie(layer, options = {}) {
       const cookie = document.createElement("span");
       const size = 30 + Math.random() * 24;
       const duration = 24 + Math.random() * 18;
-      const delay = Math.random() * -duration;
+      const delay = options.startFromBottom ? 0 : Math.random() * -duration;
       const left = Math.random() * 100;
       const drift = (Math.random() * 120 - 60).toFixed(1);
 
@@ -1060,6 +1117,7 @@
     }
 
     function crumbleCookie(cookie, layer) {
+      incrementCookieCounter();
       const rect = cookie.getBoundingClientRect();
       const crumbsCount = 10 + Math.floor(Math.random() * 6);
 
@@ -1080,8 +1138,31 @@
       setTimeout(() => cookie.remove(), 240);
 
       setTimeout(() => {
-        spawnCookie(layer);
+        spawnCookie(layer, { startFromBottom: true });
       }, 700 + Math.random() * 400);
+    }
+
+    function getStoredCookieCount() {
+      const match = document.cookie.match(/(?:^|; )crumbledCookies=([^;]*)/);
+      const value = match ? Number(decodeURIComponent(match[1])) : 0;
+      return Number.isFinite(value) && value > 0 ? Math.floor(value) : 0;
+    }
+
+    function storeCookieCount(value) {
+      const maxAge = 60 * 60 * 24 * 365;
+      document.cookie = `crumbledCookies=${encodeURIComponent(String(value))}; max-age=${maxAge}; path=/; SameSite=Lax`;
+    }
+
+    let crumbledCookies = getStoredCookieCount();
+
+    function updateCookieCounter() {
+      elements.cookieCrumbCount.textContent = String(crumbledCookies);
+    }
+
+    function incrementCookieCounter() {
+      crumbledCookies += 1;
+      storeCookieCount(crumbledCookies);
+      updateCookieCounter();
     }
 
     function createSparkles() {
@@ -1126,6 +1207,7 @@
 
     setDefaultMinDate();
     chooseRandomBackground();
+    updateCookieCounter();
     createSparkles();
     loadEvents();
   </script>
