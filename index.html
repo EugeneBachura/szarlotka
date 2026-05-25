@@ -233,6 +233,10 @@
       white-space: nowrap;
     }
 
+    .date-line[hidden] {
+      display: none !important;
+    }
+
     .status {
       min-height: 1.5em;
       margin: 16px 0 0;
@@ -894,7 +898,7 @@
     function updateMainCard() {
       if (!nearestEvent) {
         elements.eyebrow.textContent = "Odliczanie";
-        elements.title.textContent = "Na razie nic nie ma";
+        elements.title.textContent = "Nic nie ma 😔";
         elements.subtitle.textContent = "Ale zawsze można coś upiec i dać znać wcześniej!";
         elements.dateLine.hidden = true;
         elements.status.textContent = "";
