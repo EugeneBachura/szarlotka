@@ -339,14 +339,14 @@
     .empty-title {
       margin: 0;
       color: var(--accent-strong);
-      font-size: clamp(1.35rem, 3vw, 2rem);
+      font-size: clamp(1.12rem, 2.4vw, 1.52rem);
       font-weight: 760;
       letter-spacing: -0.035em;
       line-height: 1.15;
     }
 
     .empty-subtitle {
-      max-width: 34ch;
+      max-width: 44ch;
       margin: 8px auto 0;
       color: var(--muted);
       font-size: 0.98rem;
@@ -683,7 +683,7 @@
 
   <main class="page">
     <section class="card" aria-labelledby="title">
-      <p class="eyebrow">Odliczanie</p>
+      <p class="eyebrow" id="eyebrow">Odliczanie</p>
       <h1 id="title">Już wkrótce</h1>
       <p class="subtitle" id="subtitle">Ładujemy najbliższą zgłoszoną słodkość...</p>
 
@@ -800,9 +800,11 @@
       minutes: document.getElementById("minutes"),
       seconds: document.getElementById("seconds"),
       status: document.getElementById("status"),
+      eyebrow: document.getElementById("eyebrow"),
       title: document.getElementById("title"),
       subtitle: document.getElementById("subtitle"),
       dateText: document.getElementById("dateText"),
+      nextBox: document.querySelector(".next-box"),
       nextEventBox: document.getElementById("nextEventBox"),
       openEventsButton: document.getElementById("openEventsButton"),
       eventsList: document.getElementById("eventsList"),
@@ -889,25 +891,23 @@
     }
 
     function updateMainCard() {
-      elements.title.textContent = "Już wkrótce";
-
       if (!nearestEvent) {
-        elements.subtitle.textContent = "Brak zaplanowanych pyszności. Możesz dodać pierwszy termin.";
+        elements.eyebrow.textContent = "Odliczanie";
+        elements.title.textContent = "Na razie nic nie ma";
+        elements.subtitle.textContent = "Ale zawsze można coś upiec i dać znać wcześniej!";
         elements.dateText.textContent = "brak daty";
         elements.status.textContent = "";
-        elements.nextEventBox.innerHTML = `
-          <div class="empty-state empty-state-large">
-            <p class="empty-title">Na razie nic nie ma</p>
-            <p class="empty-subtitle">Ale zawsze można coś upiec i dać znać wcześniej!</p>
-          </div>
-        `;
-        elements.openEventsButton.hidden = false;
+        elements.nextBox.hidden = true;
+        elements.nextEventBox.innerHTML = "";
         setCountdownToZero();
         return;
       }
 
       const eventDate = new Date(nearestEvent.event_at);
-      elements.subtitle.textContent = "Zostało tylko trochę czasu do najpyszniejszego momentu.";
+      elements.nextBox.hidden = false;
+      elements.eyebrow.textContent = nearestEvent.contributor_name || "Odliczanie";
+      elements.title.textContent = `Już wkrótce ${nearestEvent.treat_name}!`;
+      elements.subtitle.textContent = nearestEvent.note || "Zostało tylko trochę czasu do najpyszniejszego momentu.";
       elements.dateText.textContent = warsawDateFormatter.format(eventDate);
       elements.nextEventBox.innerHTML = createEventHtml(nearestEvent);
       elements.openEventsButton.hidden = false;
