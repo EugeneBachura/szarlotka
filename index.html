@@ -1295,7 +1295,10 @@
     chooseRandomBackground();
     updateCookieCounter();
     createSparkles();
-    loadEvents().finally(revealPage);
+    Promise.all([
+      loadEvents(),
+      new Promise((resolve) => setTimeout(resolve, 1500))
+    ]).finally(revealPage);
   </script>
 </body>
 </html>
