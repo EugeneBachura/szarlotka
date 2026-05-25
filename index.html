@@ -45,6 +45,76 @@
       overflow: hidden;
     }
 
+    .page,
+    .sparkles,
+    .cookie-counter {
+      opacity: 0;
+      transition: opacity 520ms ease, transform 520ms ease;
+    }
+
+    .page {
+      transform: translateY(10px) scale(0.992);
+    }
+
+    body.is-ready .page,
+    body.is-ready .sparkles,
+    body.is-ready .cookie-counter {
+      opacity: 1;
+    }
+
+    body.is-ready .page {
+      transform: translateY(0) scale(1);
+    }
+
+    .loader {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      color: var(--text);
+      background: rgba(26, 16, 11, 0.18);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      transition: opacity 420ms ease, visibility 420ms ease;
+    }
+
+    body.is-ready .loader {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loader-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 17px;
+      border: 1px solid rgba(255, 240, 218, 0.22);
+      border-radius: 999px;
+      color: rgba(255, 250, 244, 0.88);
+      background: rgba(22, 11, 7, 0.38);
+      box-shadow: 0 16px 44px rgba(0, 0, 0, 0.24);
+      backdrop-filter: blur(14px) saturate(1.12);
+      -webkit-backdrop-filter: blur(14px) saturate(1.12);
+      font-weight: 720;
+    }
+
+    .loader-cookie {
+      display: inline-block;
+      animation: loaderCookie 1100ms ease-in-out infinite;
+    }
+
+    @keyframes loaderCookie {
+      0%, 100% {
+        transform: rotate(-8deg) scale(1);
+      }
+      50% {
+        transform: rotate(10deg) scale(1.08);
+      }
+    }
+
     button,
     input,
     textarea {
@@ -678,11 +748,14 @@
   </style>
 </head>
 
-<body>
+<body class="is-loading">
   <div class="background" aria-hidden="true"></div>
   <div class="vignette" aria-hidden="true"></div>
   <div class="noise" aria-hidden="true"></div>
   <div class="sparkles" aria-hidden="true"></div>
+  <div class="loader" id="loader" aria-live="polite" aria-label="Ładowanie strony">
+    <div class="loader-card"><span class="loader-cookie">🍪</span><span>Sprawdzamy, co się piecze...</span></div>
+  </div>
   <div class="cookie-counter" aria-label="Licznik pokruszonych ciasteczek">🍪 <span id="cookieCrumbCount">0</span></div>
 
   <main class="page">
@@ -898,7 +971,7 @@
     function updateMainCard() {
       if (!nearestEvent) {
         elements.eyebrow.textContent = "Odliczanie";
-        elements.title.textContent = "Nic nie ma 😔";
+        elements.title.textContent = "Na razie nic nie ma";
         elements.subtitle.textContent = "Ale zawsze można coś upiec i dać znać wcześniej!";
         elements.dateLine.hidden = true;
         elements.status.textContent = "";
@@ -1007,6 +1080,13 @@
         elements.openEventsButton.hidden = false;
         elements.status.textContent = "Błąd pobierania danych.";
       }
+    }
+
+    function revealPage() {
+      requestAnimationFrame(() => {
+        document.body.classList.remove("is-loading");
+        document.body.classList.add("is-ready");
+      });
     }
 
     function openModal(modal) {
@@ -1215,7 +1295,7 @@
     chooseRandomBackground();
     updateCookieCounter();
     createSparkles();
-    loadEvents();
+    loadEvents().finally(revealPage);
   </script>
 </body>
 </html>
