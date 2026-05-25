@@ -119,7 +119,7 @@
 
     .card {
       width: min(820px, 100%);
-      padding: clamp(26px, 5vw, 56px);
+      padding: clamp(26px, 5vw, 30px);
       border: 1px solid var(--panel-border);
       border-radius: clamp(24px, 4vw, 40px);
       background:
@@ -632,7 +632,7 @@
       }
 
       .card {
-        padding: clamp(24px, 7vw, 34px);
+        padding: clamp(24px, 5vw, 30px);
       }
 
       .date-line {
@@ -706,8 +706,8 @@
         </div>
       </div>
 
-      <div class="date-line" aria-label="Data wydarzenia">
-        <span id="dateText">czekamy na dane</span>
+      <div class="date-line" id="dateLine" aria-label="Data wydarzenia" hidden>
+        <span id="dateText"></span>
       </div>
 
       <div class="next-box">
@@ -803,6 +803,7 @@
       eyebrow: document.getElementById("eyebrow"),
       title: document.getElementById("title"),
       subtitle: document.getElementById("subtitle"),
+      dateLine: document.getElementById("dateLine"),
       dateText: document.getElementById("dateText"),
       nextBox: document.querySelector(".next-box"),
       nextEventBox: document.getElementById("nextEventBox"),
@@ -895,7 +896,7 @@
         elements.eyebrow.textContent = "Odliczanie";
         elements.title.textContent = "Na razie nic nie ma";
         elements.subtitle.textContent = "Ale zawsze można coś upiec i dać znać wcześniej!";
-        elements.dateText.textContent = "brak daty";
+        elements.dateLine.hidden = true;
         elements.status.textContent = "";
         elements.nextBox.hidden = true;
         elements.nextEventBox.innerHTML = "";
@@ -908,6 +909,7 @@
       elements.eyebrow.textContent = nearestEvent.contributor_name || "Odliczanie";
       elements.title.textContent = `Już wkrótce ${nearestEvent.treat_name}!`;
       elements.subtitle.textContent = nearestEvent.note || "Zostało tylko trochę czasu do najpyszniejszego momentu.";
+      elements.dateLine.hidden = false;
       elements.dateText.textContent = warsawDateFormatter.format(eventDate);
       elements.nextEventBox.innerHTML = createEventHtml(nearestEvent);
       elements.openEventsButton.hidden = false;
