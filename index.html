@@ -665,7 +665,6 @@
       </div>
 
       <div class="next-box">
-        <p class="next-title">Najbliższa pyszność</p>
         <div id="nextEventBox" aria-live="polite"></div>
         <div class="more-row">
           <button class="text-link" type="button" id="openEventsButton">Zobacz wszystkie</button>
@@ -1043,8 +1042,8 @@
 
     function spawnCookie(layer) {
       const cookie = document.createElement("span");
-      const size = 18 + Math.random() * 18;
-      const duration = 11 + Math.random() * 9;
+      const size = 30 + Math.random() * 24;
+      const duration = 24 + Math.random() * 18;
       const delay = Math.random() * -duration;
       const left = Math.random() * 100;
       const drift = (Math.random() * 120 - 60).toFixed(1);
@@ -1087,7 +1086,7 @@
 
     function createSparkles() {
       const layer = document.querySelector(".sparkles");
-      const cookiesCount = Math.min(22, Math.max(10, Math.floor(window.innerWidth / 85)));
+      const cookiesCount = Math.min(16, Math.max(7, Math.floor(window.innerWidth / 120)));
 
       for (let index = 0; index < cookiesCount; index += 1) {
         spawnCookie(layer);
